@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<!-- saved from url=(0040)https://ruyanzhou.shinyapps.io/shinyapp/ -->
+<html class=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--<base href="_w_316e1101/">--><base href=".">
+    <script type="text/javascript">
+(function() {
+  var workerId = '_w_316e1101';
+  // remove base href if worker ID is in url
+  if (window.location.href.indexOf(workerId) > 0) {
+    document.querySelector('base').removeAttribute('href');
+  }
+})();
+</script>
+
+      <script type="text/javascript">
+      var __connect = {
+        shinyPre101: false
+      }
+      </script>
+      
+  
+  <script type="application/shiny-singletons"></script>
+  <script type="application/html-dependencies">json2[2014.02.04];jquery[3.5.1];shiny[1.5.0];ionrangeslider[2.1.6];strftime[0.9.2];bootstrap[3.4.1]</script>
+<script src="./Body Fat Calculator_files/json2-min.js.download"></script>
+<script src="./Body Fat Calculator_files/jquery.min.js.download"></script>
+<link href="./Body Fat Calculator_files/shiny.css" rel="stylesheet">
+<script src="./Body Fat Calculator_files/shiny.min.js.download"></script>
+<link href="./Body Fat Calculator_files/ion.rangeSlider.css" rel="stylesheet">
+<link href="./Body Fat Calculator_files/ion.rangeSlider.skinShiny.css" rel="stylesheet">
+<script src="./Body Fat Calculator_files/ion.rangeSlider.min.js.download"></script>
+<script src="./Body Fat Calculator_files/strftime-min.js.download"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="./Body Fat Calculator_files/bootstrap.min.css" rel="stylesheet">
+<script src="./Body Fat Calculator_files/bootstrap.min.js.download"></script>
+<script src="./Body Fat Calculator_files/html5shiv.min.js.download"></script>
+<script src="./Body Fat Calculator_files/respond.min.js.download"></script>  <link rel="stylesheet" type="text/css" href="./Body Fat Calculator_files/yeti.min.css">
+  <title>Body Fat Calculator</title>
+  <title>Estimate percentage of body fat using clinically available measurements.</title>
+<script src="./Body Fat Calculator_files/sockjs-0.3.min.js.download"></script>
+<script src="./Body Fat Calculator_files/shiny-server-client.min.js.download"></script>
+<script>preShinyInit({reconnect:true,reconnectTimeout:15000,disableProtocols:["xdr-streaming","xdr-polling","websocket"],transportDebugging:false,token:true,workerId:true,subappTag:true,extendSession:true,fixupInternalLinks:true});</script>
+<link rel="stylesheet" type="text/css" href="./Body Fat Calculator_files/rstudio-connect.css">
+<link rel="stylesheet" type="text/css" href="./Body Fat Calculator_files/shinyapps.css"></head>
+<body data-new-gr-c-s-check-loaded="14.981.0" class="">
+<script type="text/javascript" src="./Body Fat Calculator_files/iframeResizer.contentWindow.min.js.download"></script>
+<script type="text/javascript" src="./Body Fat Calculator_files/shinyapps.frame.content.js.download"></script>
+<script type="text/javascript" src="./Body Fat Calculator_files/shinyapps.js.download"></script>
+
+  <div class="container-fluid">
+    <nav class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <span class="navbar-brand">Body Fat Calculator</span>
+        </div>
+        <ul class="nav navbar-nav" data-tabsetid="3112">
+          <li class="active">
+            <a href="https://ruyanzhou.shinyapps.io/shinyapp/_w_316e1101/#tab-3112-1" data-toggle="tab" data-value="Calculator">Calculator</a>
+          </li>
+          <li>
+            <a href="https://ruyanzhou.shinyapps.io/shinyapp/_w_316e1101/#tab-3112-2" data-toggle="tab" data-value="Instruction">Instruction</a>
+          </li>
+          <li>
+            <a href="https://ruyanzhou.shinyapps.io/shinyapp/_w_316e1101/#tab-3112-3" data-toggle="tab" data-value="More Information">More Information</a>
+          </li>
+          <li>
+            <a href="https://ruyanzhou.shinyapps.io/shinyapp/_w_316e1101/#tab-3112-4" data-toggle="tab" data-value="Model">Model</a>
+          </li>
+          <li>
+            <a href="https://ruyanzhou.shinyapps.io/shinyapp/_w_316e1101/#tab-3112-5" data-toggle="tab" data-value="About">About</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container-fluid">
+      <div class="tab-content" data-tabsetid="3112">
+        <div class="tab-pane active" data-value="Calculator" id="tab-3112-1">
+          <h2>Estimate percentage of body fat using clinically available measurements.</h2>
+          <div class="row">
+            <div class="col-sm-4">
+              <form class="well">
+                <span class="help-block">Please provide these clinically measurements list below. 
+                                       Notice the sample of our model only contains males, 
+                                       this 'calculator' only works for males.</span>
+                <div id="Gender" class="form-group shiny-input-radiogroup shiny-input-container shiny-input-container-inline shiny-bound-input">
+                  <label class="control-label" for="Gender">Gender</label>
+                  <div class="shiny-options-group">
+                    <label class="radio-inline">
+                      <input type="radio" name="Gender" value="male" checked="checked">
+                      <span>male</span>
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" name="Gender" value="female">
+                      <span>female</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="form-group shiny-input-container">
+                  <label class="control-label" for="Age">Age (years)</label>
+                  <span class="irs js-irs-0 irs-with-grid"><span class="irs"><span class="irs-line" tabindex="0"><span class="irs-line-left"></span><span class="irs-line-mid"></span><span class="irs-line-right"></span></span><span class="irs-min" style="visibility: visible;">0</span><span class="irs-max" style="visibility: visible;">85</span><span class="irs-from" style="visibility: hidden;">0</span><span class="irs-to" style="visibility: hidden;">0</span><span class="irs-single" style="left: 39.7084%;">35</span></span><span class="irs-grid" style="width: 95.4999%; left: 2.15006%;"><span class="irs-grid-pol" style="left: 0%"></span><span class="irs-grid-text js-grid-text-0" style="left: 0%; margin-left: -1.12645%;">0</span><span class="irs-grid-pol small" style="left: 7.058823529411768%"></span><span class="irs-grid-pol small" style="left: 3.529411764705884%"></span><span class="irs-grid-pol" style="left: 10.588235294117652%"></span><span class="irs-grid-text js-grid-text-1" style="left: 10.5882%; visibility: visible; margin-left: -1.12645%;">9</span><span class="irs-grid-pol small" style="left: 17.64705882352942%"></span><span class="irs-grid-pol small" style="left: 14.117647058823536%"></span><span class="irs-grid-pol" style="left: 21.176470588235304%"></span><span class="irs-grid-text js-grid-text-2" style="left: 21.1765%; visibility: visible; margin-left: -1.63783%;">18</span><span class="irs-grid-pol small" style="left: 28.235294117647072%"></span><span class="irs-grid-pol small" style="left: 24.705882352941188%"></span><span class="irs-grid-pol" style="left: 31.764705882352956%"></span><span class="irs-grid-text js-grid-text-3" style="left: 31.7647%; visibility: visible; margin-left: -1.63783%;">27</span><span class="irs-grid-pol small" style="left: 38.823529411764724%"></span><span class="irs-grid-pol small" style="left: 35.29411764705884%"></span><span class="irs-grid-pol" style="left: 42.35294117647061%"></span><span class="irs-grid-text js-grid-text-4" style="left: 42.3529%; margin-left: -1.63783%;">36</span><span class="irs-grid-pol small" style="left: 49.411764705882376%"></span><span class="irs-grid-pol small" style="left: 45.88235294117649%"></span><span class="irs-grid-pol" style="left: 52.94117647058826%"></span><span class="irs-grid-text js-grid-text-5" style="left: 52.9412%; visibility: visible; margin-left: -1.63783%;">45</span><span class="irs-grid-pol small" style="left: 60.00000000000003%"></span><span class="irs-grid-pol small" style="left: 56.470588235294144%"></span><span class="irs-grid-pol" style="left: 63.52941176470591%"></span><span class="irs-grid-text js-grid-text-6" style="left: 63.5294%; visibility: visible; margin-left: -1.63783%;">54</span><span class="irs-grid-pol small" style="left: 70.58823529411768%"></span><span class="irs-grid-pol small" style="left: 67.0588235294118%"></span><span class="irs-grid-pol" style="left: 74.11764705882356%"></span><span class="irs-grid-text js-grid-text-7" style="left: 74.1176%; visibility: visible; margin-left: -1.63783%;">63</span><span class="irs-grid-pol small" style="left: 81.17647058823533%"></span><span class="irs-grid-pol small" style="left: 77.64705882352945%"></span><span class="irs-grid-pol" style="left: 84.70588235294122%"></span><span class="irs-grid-text js-grid-text-8" style="left: 84.7059%; margin-left: -1.63783%;">72</span><span class="irs-grid-pol small" style="left: 91.76470588235298%"></span><span class="irs-grid-pol small" style="left: 88.2352941176471%"></span><span class="irs-grid-pol" style="left: 95.29411764705887%"></span><span class="irs-grid-text js-grid-text-9" style="left: 95.2941%; visibility: visible; margin-left: -1.63783%;">81</span><span class="irs-grid-pol small" style="left: 98.43137254901963%"></span><span class="irs-grid-pol small" style="left: 96.86274509803924%"></span><span class="irs-grid-pol" style="left: 100%"></span><span class="irs-grid-text js-grid-text-10" style="left: 100%; visibility: visible; margin-left: -1.63783%;">85</span></span><span class="irs-bar" style="left: 2.25006%; width: 39.3235%;"></span><span class="irs-bar-edge"></span><span class="irs-shadow shadow-single" style="display: none;"></span><span class="irs-slider single" style="left: 39.3235%;"></span></span><input class="js-range-slider irs-hidden-input shiny-bound-input" id="Age" data-min="0" data-max="85" data-from="35" data-step="1" data-grid="true" data-grid-num="9.44444444444444" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-data-type="number" tabindex="-1" readonly="">
+                </div>
+                <div class="form-group shiny-input-container">
+                  <label class="control-label" for="Height">Height (inches)</label>
+                  <input id="Height" type="number" class="form-control shiny-bound-input" value="66" min="0" max="&lt;pre id=&quot;value&quot; class=&quot;shiny-text-output noplaceholder&quot;&gt;&lt;/pre&gt;">
+                </div>
+                <div class="form-group shiny-input-container">
+                  <label class="control-label" for="Weight">Weight (lbs)</label>
+                  <input id="Weight" type="number" class="form-control shiny-bound-input" value="162.75" min="0" max="&lt;pre id=&quot;value&quot; class=&quot;shiny-text-output noplaceholder&quot;&gt;&lt;/pre&gt;">
+                </div>
+                <div class="form-group shiny-input-container">
+                  <label class="control-label" for="Abdomen">Abdomen 2 circumference (cm)</label>
+                  <input id="Abdomen" type="number" class="form-control shiny-bound-input" value="92.8" min="0" max="&lt;pre id=&quot;value&quot; class=&quot;shiny-text-output noplaceholder&quot;&gt;&lt;/pre&gt;">
+                </div>
+                <div class="form-group shiny-input-container">
+                  <label class="control-label" for="Wrist">Wrist circumference (cm)</label>
+                  <input id="Wrist" type="number" class="form-control shiny-bound-input" value="16.9" min="0" max="&lt;pre id=&quot;value&quot; class=&quot;shiny-text-output noplaceholder&quot;&gt;&lt;/pre&gt;">
+                </div>
+                <div class="form-group shiny-input-container">
+                  <label class="control-label" for="Chest">Chest circumference (cm)</label>
+                  <input id="Chest" type="number" class="form-control shiny-bound-input" value="99.1" min="0" max="&lt;pre id=&quot;value&quot; class=&quot;shiny-text-output noplaceholder&quot;&gt;&lt;/pre&gt;">
+                </div>
+                <button id="click" type="button" class="btn btn-default action-button shiny-bound-input">Calculate</button>
+              </form>
+            </div>
+            <div class="col-sm-8">
+              <div data-display-if="input.Gender==&#39;female&#39;" data-ns-prefix="" style="display: none;">
+                <h3>Sorry, this calculator only works for men.</h3>
+              </div>
+              <div data-display-if="input.Gender==&#39;male&#39;" data-ns-prefix="">
+                <h5>Notice: If your age is under 20, this calculator may give 
+                                 an inaccurate estimation.</h5>
+                <br>
+                <br>
+                <h5>Here is a plot of different body fat levels:</h5>
+                <div id="levels" class="shiny-plot-output shiny-bound-output" style="width: 1000px ; height: 150px"><img src="data:image/png;base64,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" width="1000" height="150"></div>
+                <br>
+                <br>
+                <div id="bodyfat_estimation" class="shiny-text-output shiny-bound-output"></div>
+                <div id="bodyfat_level" class="shiny-text-output shiny-bound-output"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane" data-value="Instruction" id="tab-3112-2">
+          <h3>Tips when you measure your Weight:</h3>
+          <h4>1. Weigh yourself at the same time every day (morning is best, after using the restroom).</h4>
+          <h4>2. Use a quality weighing device that's set up properly.</h4>
+          <h4>3. Take care of the scale, you should provide your weight in lbs 
+                           when using this calculator.</h4>
+          <h4>4. Weigh yourself naked or wear the same thing for every weight measurement.</h4>
+          <br>
+          <br>
+          <h3>Tips when you measure your Height:</h3>
+          <h4>1. Find a flat, uncarpeted section of floor. Better to measure with your shoes off.</h4>
+          <h4>2. Remove anything on your head that may get in the way of an accurate measurement.</h4>
+          <h4>3. Remove any bulky clothing that may make it difficult to stand flat.</h4>
+          <h4>4. Stand up straight with your eyes looking straight ahead. 
+                           Your line of sight and chin should be parallel to the floor.</h4>
+          <br>
+          <br>
+          <h3>Tips when you measure circumference of your body part:</h3>
+          <h4>1. When taking these measurements, use a cloth tape measure, not a metal one.</h4>
+          <h4>2. Make sure that, when you circle your chest, wrist, 
+                           or abdomen, the tape is level and neither too tight nor too loose.</h4>
+          <h4>3. Measure yourself on your bare skin, not over clothes.</h4>
+          <h4>4. Don't trust your memory - be sure to write the measurements down!</h4>
+        </div>
+        <div class="tab-pane" data-value="More Information" id="tab-3112-3">
+          <h3>What is body fat percentage?</h3>
+          <h4>The body fat percentage (BFP) of a human or other living being 
+                           is the total mass of fat divided by total body mass, multiplied 
+                           by 100; body fat includes essential body fat and storage body fat. 
+                           Essential body fat is necessary to maintain life and reproductive functions. 
+                           Storage body fat consists of fat accumulation in adipose tissue, 
+                           part of which protects internal organs in the chest and abdomen.</h4>
+          <br>
+          <h3>What does body fat percentage indicate?</h3>
+          <h4>The body fat percentage is a measure of fitness level. 
+                           No matter what you weigh, the higher percentage of body 
+                           fat you have, the more likely you are to develop obesity-related 
+                           diseases, including heart disease, high blood pressure, stroke, and type 2 diabetes.</h4>
+          <br>
+          <h3>How to lose your weight in a safe way?</h3>
+          <h4>When it comes to losing weight, the key is to eat fewer calories 
+                           than you expend. If you do this, AND exercise, you will lose body fat.
+                           Also, take your time-if you eat too few calories or cut out all 
+                           carbohydrates, the weight you lose will likely be fluids and muscle, not fat.
+                           In this case the scale will go down, but your body fat percentage will go up, 
+                           rendering you less healthy. The Academy of Nutrition and Dietetics recommends 
+                           losing weight slowly-0.5 to 1 pound per week-and continue exercising to 
+                           maximize fat loss and minimize muscle loss.</h4>
+          <br>
+          <br>
+          <br>
+          <div style="color:blue">Want more information? Check these pages:</div>
+          <div id="page1" class="shiny-html-output shiny-bound-output"></div>
+          <div id="page2" class="shiny-html-output shiny-bound-output"></div>
+        </div>
+        <div class="tab-pane" data-value="Model" id="tab-3112-4">
+          <p>Our model is constructed from a real data set of 252 men 
+                          with measurements of their percentage of body fat and various 
+                          body circumference measurements. The formula of our calculator is:</p>
+          <div id="formula" class="shiny-html-output shiny-bound-output"></div>
+          <div id="bmi" class="shiny-html-output shiny-bound-output"></div>
+        </div>
+        <div class="tab-pane" data-value="About" id="tab-3112-5">
+          <p>This Shiny App is designed by:
+                          Ruyan Zhou
+                          </p>
+          <p>All questions and suggestions are welcome. Contact these maintainers:</p>
+          <p>Ruyan Zhou (rzhou84@wisc.edu)</p>
+          <p>Peibin Rui (prui@wisc.edu)</p>
+          <p>Tianrun Wang (twang494@wisc.edu)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<div id="ss-connect-dialog" style="display: none;"><label>Attempting to reconnect...</label><label>&nbsp;</label></div><div id="ss-overlay" class="ss-gray-out" style="display: none;"></div></body></html>

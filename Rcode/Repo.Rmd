@@ -1,0 +1,238 @@
+---
+title: "STAT 628 Module 2"
+author: "Ruyan Zhou"
+date: "10/24/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data Cleaning
+
+```{r, message=F}
+rm(list=ls())
+require(car)
+require("MVA")
+require("biwt")
+```
+
+```{r}
+# read the raw data.
+bodyfat <- read.table('../data/BodyFat.csv',header = T,sep = ',')
+# look at the first few rows of raw data.
+head(bodyfat)
+# summary raw data.
+summary(bodyfat)
+# boxplot of bodyfat.
+boxplot(bodyfat$BODYFAT)
+bodyfat <- bodyfat[-c(which.min(bodyfat$BODYFAT),which.max(bodyfat$BODYFAT)),]
+```
+
+  
+*Here, we found the minimum value of bodyfat is 0%, which we believe is an error point. So, we drop this point. Also, the maximum value of bodyfat is 45.1%, which is an outlier in the boxplot. Although it might be the case that someone is obese enough to reach that high level of body fat, our opinion is this person is not a representative one for the whold population. Specifically, highly obese people may account for only 0.01% of the population, but in our sample its about 0.25%.* 
+
+```{r}
+bodyfat[42,]
+bodyfat[42,'HEIGHT'] <- sqrt(bodyfat[42,'WEIGHT']/bodyfat[42,'ADIPOSITY']*703)
+bodyfat[42,]
+```
+*Also, the minimum value of height is 29.50 inches. Considering all people in our sample are adults, this one might be a midget. However, by looking his weight(205.00 lbs) and adiposity(29.9 bmi), these values are very likely from a normal person. So, we might think there is something wrong with the height and we replace it with the value calculated from weight and adiposity.*
+
+```{r}
+plot(bodyfat$ADIPOSITY,bodyfat$WEIGHT/bodyfat$HEIGHT^2,type = 'n',xlab="ADIPOSITY",ylab="WEIGHT/HEIGHT^2")
+text(bodyfat$ADIPOSITY,bodyfat$WEIGHT/bodyfat$HEIGHT^2,bodyfat$IDNO,cex=0.5)
+bodyfat[which(bodyfat$IDNO==163),'ADIPOSITY'] <- bodyfat[which(bodyfat$IDNO==163),'WEIGHT']/bodyfat[which(bodyfat$IDNO==163),'HEIGHT']^2*703 
+bodyfat[which(bodyfat$IDNO==221),'ADIPOSITY'] <- bodyfat[which(bodyfat$IDNO==221),'WEIGHT']/bodyfat[which(bodyfat$IDNO==221),'HEIGHT']^2*703 
+
+plot(bodyfat$ADIPOSITY,bodyfat$WEIGHT/bodyfat$HEIGHT^2,type = 'n',xlab="ADIPOSITY",ylab="WEIGHT/HEIGHT^2")
+text(bodyfat$ADIPOSITY,bodyfat$WEIGHT/bodyfat$HEIGHT^2,bodyfat$IDNO,cex=0.5)
+```
+
+*There are still two points whose adiposity violate from the calculating formula $(703weight/(height)^2)$, we correct these two adiposities by the value from this formula. Also we can read from the plot that there are two suspicious outliers(points No.39 and No.41).*
+
+```{r}
+# Violation of Siri's equation.
+plot(bodyfat$BODYFAT,1/bodyfat$DENSITY,type = 'n',xlab="BODYFAT",ylab="1/DENSITY",xaxt="n",yaxt="n");axis(1,cex.axis=0.5);axis(2,cex.axis=0.8)
+text(bodyfat$BODYFAT,1/bodyfat$DENSITY,bodyfat$IDNO,cex=0.5)
+```
+
+*In the data discription, it's said that BODYFAT were calculated from DENSITY by Siri's equation. However, in the plot above, it seems there are few points who don't satisfy Siri's equation. For these points, we check the rationality of these points by cross scatter plots. If there is no anomaly, we replace BODYFAT by the value calculated from Siri's equation using DENSITY.* 
+
+```{r}
+# check anomalies, delete No.39 and No.41 
+options(repr.plot.width=6, repr.plot.height=6)
+pairs(bodyfat[,3:17], 
+      panel = function(x,y, ...) {
+        text(x, y, bodyfat$IDNO,cex = 1, pos = 2)
+        bvbox(cbind(x,y), add = TRUE,method = "robust")
+      })
+set.seed(2)
+x <- sample(1:252,18)
+y <- x[!x %in% c(216,182)]
+options(repr.plot.width=5, repr.plot.height=5)
+subdata <- bodyfat[unique(c(39,41,86,31,which(bodyfat$IDNO %in% y))),]
+stars(subdata[,-1],
+      nrow=5,ncol=5,labels=subdata$IDNO)
+bodyfat <- bodyfat[-c(which(bodyfat$IDNO==39),which(bodyfat$IDNO==41),which(bodyfat$IDNO==86),which(bodyfat$IDNO==31)),]
+pairs(bodyfat[,3:17], 
+      panel = function(x,y, ...) {
+        text(x, y, bodyfat$IDNO,cex = 1, pos = 2)
+        bvbox(cbind(x,y), add = TRUE,method = "robust")
+      })
+bodyfat <- bodyfat[-which(bodyfat$IDNO==96),]
+```
+
+*From the scatter plots and the star plot, we consider point No.39 and No.41 as outliers and remove them. And points No.86 and No.31 are outliers in all cross plots related to ANKLE. We drop these two points too. Then, we draw the crossed scatter plots again and found that point No.96 becomes an outlier in plots related to DENSITY. Thus, we drop points No.96 and we replace the BODYFAT value of points No.76 and No.48 with results given by Siri's equation.*
+
+```{r}
+bodyfat[which(bodyfat$IDNO==48),'BODYFAT']<-495/bodyfat[which(bodyfat$IDNO==48),'DENSITY']-450
+# bodyfat[which(bodyfat$IDNO==96),'BODYFAT']<-495/bodyfat[which(bodyfat$IDNO==96),'DENSITY']-450
+bodyfat[which(bodyfat$IDNO==76),'BODYFAT']<-495/bodyfat[which(bodyfat$IDNO==76),'DENSITY']-450
+write.csv(bodyfat,"cleandata.csv", row.names = F)
+```
+
+
+## Model fitting 
+
+*Now we start to build our model. We first considered a PCA model, but we drop this idea because it is not user-friendly (PCA requires the user to provide all 14 predictors). Finally, we choose to build our model by stepwise selection.*
+
+```{r}
+bodyfat=read.csv("cleandata.csv")
+head(bodyfat)
+```
+
+
+```{r}
+# StepWise
+BodyFat=bodyfat[,-c(1,3)]
+full_model = lm(BODYFAT~.*., data = BodyFat)
+null_model = lm(BODYFAT~1, data = BodyFat)
+```
+
+```{r}
+# Forward stepwise by comparing AIC
+step(null_model, scope = list(upper = full_model), direction = "forward", k = 2)
+```
+
+```{r}
+# Forward stepwise by comparing BIC
+step(null_model, scope = list(upper = full_model), direction = "forward", k = log(length(BodyFat$BODYFAT)))
+```
+
+```{r, results='hide'}
+# Both direction by comparing AIC (same as the forward stepwise)
+step(null_model, scope = list(upper = full_model), direction = "both", k = 2) 
+```
+
+```{r, results='hide'}
+# Both direction by comparing BIC (same as the forward stepwise)
+step(null_model, scope = list(upper = full_model), direction = "both", k = log(length(BodyFat$BODYFAT))) 
+```
+
+```{r, results='hide'}
+# Backward by comparing AIC (too many predictors, not user-friendly, so we drop this one.)
+step(full_model, direction = "backward", k = 2)
+```
+
+```{r}
+# Backward by comparing BIC 
+step(full_model, direction = "backward", k = log(length(BodyFat$BODYFAT)))
+```
+
+```{r}
+# we got 3 candidate models
+# model from forward selection comparing AIC
+m1 = lm(BODYFAT ~ ABDOMEN + WEIGHT + WRIST + BICEPS + WEIGHT:BICEPS +
+    ABDOMEN*WRIST + WRIST*BICEPS, data = BodyFat)
+summary(m1)
+# model from forward selection comparing BIC
+m2 = lm(BODYFAT ~ ABDOMEN+WEIGHT+WRIST, data = BodyFat)
+summary(m2)
+# model from backward selection comparing BIC
+m3 = lm(BODYFAT ~ AGE + ADIPOSITY + CHEST + ABDOMEN + WRIST +
+    AGE*WRIST, data = BodyFat)
+summary(m3)
+```
+
+*From the summary of these three models, all these models are significant based on F-test. The first model has a majority of insignificant coefficients, while all coefficients of model2 and model3 are significant. Comparing either $R^2$ or RSS, model1 and model3 have better performance than model2. Now, we would like to check their performance in predicting.*
+
+```{r}
+#Compare predicting performance using cross validation.
+
+p <- 0.8 # ratio btw train vs. valid , which you can decide
+m1.se = numeric()
+m2.se = numeric()
+m3.se = numeric()
+for ( i in 1:500 ){
+  set.seed(i)
+  idx <- sample.int(n = nrow(BodyFat), size = floor(p*nrow(BodyFat)), replace = FALSE)
+  train_data <- BodyFat[idx,]
+  test_data <- BodyFat[-idx,]
+  #Fit the models with train data .
+  m1.trained <- lm(BODYFAT ~ ABDOMEN + WEIGHT + WRIST + BICEPS + WEIGHT:BICEPS +
+    ABDOMEN*WRIST + WRIST*BICEPS, data = train_data)
+  m2.trained <- lm(BODYFAT ~ ABDOMEN+WEIGHT+WRIST, data = train_data)
+  m3.trained <- lm(BODYFAT ~ AGE + ADIPOSITY + CHEST + ABDOMEN + WRIST +
+    AGE*WRIST, data = train_data)
+  # Predict your response with validation data .
+  m1.pred <- predict(m1.trained, newdata = test_data)
+  m2.pred <- predict(m2.trained, newdata = test_data)
+  m3.pred <- predict(m3.trained, newdata = test_data)
+  ## Compute the AUC and record it (because we will repeat this 500 times).
+  m1.se[i] <- sum((m1.pred-test_data$BODYFAT)^2) # store this value.
+  m2.se[i] <- sum((m2.pred-test_data$BODYFAT)^2) # store this value.
+  m3.se[i] <- sum((m3.pred-test_data$BODYFAT)^2) # store this value .
+}
+mean(m1.se)
+mean(m2.se)
+mean(m3.se)
+```
+
+*As the result shown, model3 has the lowest SSE in predicting. Based on this result and the summary we talked above, we choose model3 as our final model.*
+
+## Model diagnose
+```{r}
+# residual plot
+plot(m3, which = c(1,2))
+```
+
+*Linearity and Homoskedasticity are reasonable since the residual plot shows a random pattern.*  
+*Normality also seems reasonable because the 45 degree line fits well. But there might be skinny tail issue.*
+
+```{r}
+
+pii = hatvalues(m3)
+cooki = cooks.distance(m3)
+par(mfrow = c(3,1))
+n = dim(BodyFat)[1]
+
+#check for outliers
+plot(m3$fitted.values, studres(m3), ylim = c(-3.5, 3.5),
+     xlab="Fitted Values", ylab="Studentized Residuals")
+abline(0,0)
+abline(3,0,col = "red")
+abline(-3,0,col = "red")
+
+#check for leverage points
+plot(1:n,pii,type="p",pch=19,cex=1.2,
+     xlab="Index (Each Observation)",ylab="Pii",main="Leverage Values (Pii)")
+
+
+#check for influencial points
+plot(1:n,cooki,type="l",pch=19,cex=1.2,
+     xlab="Index (Each Observation)",ylab="Cook's Distance",main="Influence Values (Cook's Distance)")
+
+
+```
+
+*The residual plot shows there is no outlier. The leverage plot indicates the last obaservation might be a levarage point. And cook's Distance plot shows no significant influencial points.*
+
+
+
+
+
+
+
+
